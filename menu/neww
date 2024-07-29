@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Baris yang akan ditambahkan
+trap_line='exit_clean() { echo " Dihentikan"; exit 0; }'
+trap_setup='trap exit_clean SIGINT'
+
+# Fungsi untuk menambahkan baris ke setiap file dalam folder
+add_trap_to_files() {
+  local folder=$1
+
+  # Loop melalui setiap file dalam folder
+  for file in "$folder"/*; do
+    # Pastikan hanya memproses file reguler
+    if [ -f "$file" ]; then
+      # Menyisipkan baris setelah shebang
+      sed -i "1a $trap_line\n$trap_setup" "$file"
+      echo "Menambahkan trap ke $file"
+    fi
+  done
+}
+
+# Memeriksa apakah folder diberikan sebagai argumen
+if [ -z "$1" ]; then
+  echo "Harap masukkan path folder."
+  exit 1
+fi
+
+# Menjalankan fungsi untuk menambahkan baris ke file dalam folder
+add_trap_to_files "$1"

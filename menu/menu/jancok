@@ -1,0 +1,82 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+REPOKU="https://www.vmessh.cloud"
+REPOSC="https://iam.scvpn.cloud"
+biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+export N='\e[0m'
+export W='\e[1;37m'
+export G='\e[1;32m'
+export U="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+export O="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+ipsaya=$(wget -qO- ipv4.icanhazip.com)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit 1
+    else
+        echo -ne
+    fi
+}
+checking_sc
+clear
+IP=$(wget -qO- ipv4.icanhazip.com);
+date=$(date +"%d-%m-%Y | %H:%M:%S %Z")
+echo
+echo -e " [${U}INFO${N}] Mohon Menunggu!"
+sleep 1
+echo -e " [${U}INFO${N}] Proses Backup sedang berlangsung.."
+rm -rf /root/backup
+mkdir /root/backup
+cp -r /etc/passwd /root/backup/ &> /dev/null
+cp -r /etc/group /root/backup/ &> /dev/null
+cp -r /etc/shadow /root/backup/ &> /dev/null
+cp -r /etc/gshadow /root/backup/ &> /dev/null
+cp -r /usr/bin/idchat /root/backup/ &> /dev/null
+cp -r /usr/bin/token /root/backup/ &> /dev/null
+cp -r /etc/per/id /root/backup/ &> /dev/null
+cp -r /etc/per/token /root/backup/token2 &> /dev/null
+cp -r /etc/perlogin/id /root/backup/loginid &> /dev/null
+cp -r /etc/perlogin/token /root/backup/logintoken &> /dev/null
+cp -r /etc/botexp/id /root/backup/expid &> /dev/null
+cp -r /etc/botexp/token /root/backup/exptoken &> /dev/null
+cp -r /etc/xray/config.json /root/backup/xray &> /dev/null
+cp -r /etc/xray/ssh /root/backup/ssh &> /dev/null
+cp -r /etc/xray/domain /root/backup/domain &> /dev/null
+cp -r /home/vps/public_html /root/backup/public_html &> /dev/null
+cp -r /etc/xray/sshx /root/backup/sshx &> /dev/null
+cp -r /etc/vmess /root/backup/vmess &> /dev/null
+cp -r /etc/vless /root/backup/vless &> /dev/null
+cp -r /etc/trojan /root/backup/trojan &> /dev/null
+cp -r /etc/issue.net /root/backup/issue &> /dev/null
+cd /root
+zip -r $IP-$date.zip backup > /dev/null 2>&1
+rclone copy /root/$IP-$date.zip dr:backup/
+url=$(rclone link dr:backup/$IP-$date.zip)
+id=(`echo $url | grep '^https' | cut -d'=' -f2`)
+link="https://drive.google.com/u/4/uc?id=${id}&export=download"
+rm -rf /root/backup
+rm -r /root/$IP-$date.zip
+clear
+echo -e "
+${U} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}
+${G}           DETAIL BACKUP
+${U} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}
+${W} IP VPS        :${N} $IP
+${W} DATE/TIME     :${N} $date
+${W} LINK BACKUP   :${N} $link
+${U} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}
+${U} Silahkan save link di atas${N}"
+echo
+read -n 1 -s -r -p " Press any key to back on menu"
+menu
+exit 0

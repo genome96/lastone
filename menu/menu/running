@@ -1,0 +1,420 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+REPOKU="https://www.vmessh.cloud"
+REPOSC="https://iam.scvpn.cloud"
+biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+export N='\e[0m'
+export R='\e[1;31m'
+export G='\e[1;32m'
+export Y='\e[0;33m'
+export W='\e[1;37m'
+export RG='\e[38;5;208m'
+export COLOR1="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+export COLBG1="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+U=$COLOR1
+O=$COLBG1
+tram=$( free -h | awk 'NR==2 {print $2}' )
+uram=$( free -h | awk 'NR==2 {print $3}' )
+ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
+CITY=$(curl -s ipinfo.io/city )
+ipsaya=$(wget -qO- ipv4.icanhazip.com)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit 1
+    else
+        echo -ne
+    fi
+}
+checking_sc
+MYIP=$(curl -sS ipv4.icanhazip.com)
+Exp=$(curl -sS ${REPOKU}/registrasi.txt | grep $MYIP | awk '{print $3}')
+clear
+source /etc/os-release
+versisc=$(cat /etc/xray/versisc)
+Versi_OS=$VERSION
+ver=$VERSION_ID
+Tipe=$NAME
+URL_SUPPORT=$HOME_URL
+basedong=$ID
+REGION=$( curl -s ipinfo.io/region )
+CITY=$( curl -s ipinfo.io/city )
+oovpn=$(systemctl status openvpn | grep Active | awk '{print $2}' | cut -d "(" -f2 | cut -d ")" -f1)
+tls_v2ray_status=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+nontls_v2ray_status=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+vless_tls_v2ray_status=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+vless_nontls_v2ray_status=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+shadowsocks=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+trojan_server=$(systemctl status xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+dropbear_status=$(/etc/init.d/dropbear status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+stunnel_service=$(/etc/init.d/stunnel4 status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+ssh_service=$(/etc/init.d/ssh status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+vnstat_service=$(/etc/init.d/vnstat status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+cron_service=$(/etc/init.d/cron status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+fail2ban_service=$(/etc/init.d/fail2ban status | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+wstls=$(systemctl status ws-stunnel.service | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+wsovpn=$(systemctl status ws-ovpn | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+osslh=$(systemctl status sslh | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+udp=$(systemctl status udp-custom | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+clear
+if [[ $oovpn == "active" ]]; then
+    status_openvpn=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_openvpn=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $ssh_service == "running" ]]; then
+    status_ssh=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_ssh=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $squid_service == "running" ]]; then
+    status_squid=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_squid=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $vnstat_service == "running" ]]; then
+    status_vnstat=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_vnstat=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $cron_service == "running" ]]; then
+    status_cron=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_cron=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $fail2ban_service == "running" ]]; then
+    status_fail2ban=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_fail2ban=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $tls_v2ray_status == "running" ]]; then
+    status_tls_v2ray=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_tls_v2ray=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $nontls_v2ray_status == "running" ]]; then
+    status_nontls_v2ray=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_nontls_v2ray=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $vless_tls_v2ray_status == "running" ]]; then
+    status_tls_vless=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_tls_vless=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $vless_nontls_v2ray_status == "running" ]]; then
+    status_nontls_vless=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_nontls_vless=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $trojan_server == "running" ]]; then
+    status_virus_trojan=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_virus_trojan=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $dropbear_status == "running" ]]; then
+    status_beruangjatuh=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_beruangjatuh=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $stunnel_service == "running" ]]; then
+    status_stunnel=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_stunnel=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $wstls == "running" ]]; then
+    swstls=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    swstls=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $osslh == "running" ]]; then
+    sosslh=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    sosslh=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $udp == "running" ]]; then
+    udp=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    udp=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $sls == "running" ]]; then
+    sls=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    sls=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $slc == "running" ]]; then
+    slc=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    slc=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+
+if [[ $shadowsocks == "running" ]]; then
+    status_shadowsocks=" ${G}Running${N} (No Error)  ${U} ║${N}"
+else
+    status_shadowsocks=" ${R}Not Running${N} (Error) ${U} ║${N}"
+fi
+total_ram=`grep "MemTotal: " /proc/meminfo | awk '{ print $2}'`
+totalram=$(($total_ram/1024))
+kernelku=$(uname -r)
+DATE=$(date +'%Y-%m-%d')
+datediff() {
+    d1=$(date -d "$1" +%s)
+    d2=$(date -d "$2" +%s)
+    echo -e "  Expiry In   : $(( (d1 - d2) / 86400 )) Days"
+}
+mai="datediff "$Exp" "$DATE""
+today=`date -d "0 days" +"%Y-%m-%d"`
+Exp2=$(curl -sS ${REPOKU}/registrasi.txt | grep $MYIP | awk '{print $3}')
+d1=$(date -d "$Exp2" +%s)
+d2=$(date -d "$today" +%s)
+certificate=$(( (d1 - d2) / 86400 ))
+Name2=$(curl -sS ${REPOKU}/registrasi.txt | grep $MYIP | awk '{print $2}')
+domain=$(cat /etc/xray/domain)
+
+function restartservice(){
+    clear
+    fun_bar() {
+        CMD[0]="$1"
+        CMD[1]="$2"
+        (
+            [[ -e $HOME/fim ]] && rm $HOME/fim
+            ${CMD[0]} -y >/dev/null 2>&1
+            ${CMD[1]} -y >/dev/null 2>&1
+            touch $HOME/fim
+        ) >/dev/null 2>&1 &
+        tput civis
+        echo -ne "  ${Y}Please Wait Loading - ${N}["
+        while true; do
+            for ((i = 0; i < 18; i++)); do
+                echo -ne "${U}●"
+                sleep 0.1s
+            done
+            [[ -e $HOME/fim ]] && rm $HOME/fim && break
+            echo -e "${Y}]"
+            sleep 1s
+            tput cuu1
+            tput dl1
+            echo -ne "  ${Y}Please Wait Loading - ${N}["
+        done
+        echo -e "${Y}] -${G} OK !${N}"
+        tput cnorm
+    }
+    res1() {
+        systemctl restart nginx
+        systemctl restart xray
+        systemctl restart daemon
+        systemctl restart udp-custom
+        systemctl restart ws-dropbear
+        systemctl restart ws-stunnel
+        systemctl restart openvpn
+        systemctl restart cron
+        systemctl restart netfilter-persistent
+        systemctl restart squid
+        systemctl restart badvpn1
+        systemctl restart badvpn2
+        systemctl restart badvpn3
+        systemctl restart kyt
+    }
+    clear
+    echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W}            RESTART SERVICE VPS           ${U}║${N}"
+    echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+    echo -e "  ${RG}Restart All Service...${N}"
+    fun_bar 'res1'
+    echo -e "${N}"
+    read -n 1 -s -r -p "  Press [ Enter ] to back on menu"
+    exec menu && exit 0
+}
+
+function menuservice(){
+clear
+echo -e ""
+echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W}        Please select a your Choice       ${U}║${N}"
+echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W} [${U}01${W}] Restart ALL Service                 ${U}║${N}"
+echo -e " ${U}║${W} [${U}02${W}] Stop Service                        ${U}║${N}"
+echo -e " ${U}║${W} [${U}03${W}] Start Service                       ${U}║${N}"
+echo -e " ${U}║${W}                                          ${U}║${N}"
+echo -e " ${U}║${W} [${U}00${W}] Back To menu                        ${U}║${N}"
+echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+until [[ $serr =~ ^[0-3]+$ ]]; do
+    read -p "  Please select numbers 1 - 3 : " serr
+done
+if [[ $serr == "0" ]]; then
+    exec menu && exit 0
+elif [[ $serr == "1" ]]; then
+    restartservice
+elif [[ $serr == "2" ]]; then
+    clear
+    echo -e ""
+    echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W}        Please select a your Choice       ${U}║${N}"
+    echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+    echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W} [${U}01${W}] STOP SERVICE OVPN                   ${U}║${N}"
+    echo -e " ${U}║${W} [${U}02${W}] STOP SERVICE UDP COSTUM             ${U}║${N}"
+    echo -e " ${U}║${W} [${U}03${W}] STOP SERVICE SSH                    ${U}║${N}"
+    echo -e " ${U}║${W} [${U}04${W}] STOP SERVICE XRAY                   ${U}║${N}"
+    echo -e " ${U}║${W} [${U}05${W}] STOP SERVICE NGINX                  ${U}║${N}"
+    echo -e " ${U}║${W}                                          ${U}║${N}"
+    echo -e " ${U}║${W} [${U}00${W}] Back To menu                        ${U}║${N}"
+    echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+    until [[ $vice =~ ^[0-6]+$ ]]; do
+        read -p "   Please select numbers 1 - 6 : " vice
+    done
+    if [[ $vice == "0" ]]; then
+        exec menu && exit 0
+    elif [[ $vice == "1" ]]; then
+        systemctl stop openvpn
+        systemctl stop ws-ovpn
+        systemctl disable openvpn
+        systemctl disable ws-ovpn
+        read -n 1 -s -r -p "  Succes Stop Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "2" ]]; then
+        systemctl stop udp-custom
+        systemctl disable udp-custom
+        read -n 1 -s -r -p "  Succes Stop Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "3" ]]; then
+        systemctl stop ws-stunnel
+        systemctl disable ws-stunnel
+        read -n 1 -s -r -p "  Succes Stop Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "4" ]]; then
+        systemctl stop xray
+        systemctl disable xray
+        read -n 1 -s -r -p "  Succes Stop Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "5" ]]; then
+        systemctl stop nginx
+        systemctl disable nginx
+        read -n 1 -s -r -p "  Succes Stop Service. Press any key to Back Menu"
+        exec menu && exit 0
+    fi
+elif [[ $serr == "3" ]]; then
+    clear
+    echo -e ""
+    echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W}        Please select a your Choice       ${U}║${N}"
+    echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+    echo -e " ${U}╔══════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W} [${U}01${W}] START SERVICE OVPN                  ${U}║${N}"
+    echo -e " ${U}║${W} [${U}02${W}] START SERVICE UDP COSTUM            ${U}║${N}"
+    echo -e " ${U}║${W} [${U}03${W}] START SERVICE SSH                   ${U}║${N}"
+    echo -e " ${U}║${W} [${U}04${W}] START SERVICE XRAY                  ${U}║${N}"
+    echo -e " ${U}║${W} [${U}05${W}] START SERVICE NGINX                 ${U}║${N}"
+    echo -e " ${U}║${W}                                          ${U}║${N}"
+    echo -e " ${U}║${W} [${U}00${W}] Back To menu                        ${U}║${N}"
+    echo -e " ${U}╚══════════════════════════════════════════╝${N}"
+    until [[ $vice =~ ^[0-6]+$ ]]; do
+        read -p "   Please select numbers 1 - 6 : " vice
+    done
+    if [[ $vice == "0" ]]; then
+        exec menu && exit 0
+    elif [[ $vice == "1" ]]; then
+        systemctl enable openvpn
+        systemctl enable ws-ovpn
+        systemctl restart openvpn
+        systemctl restart ws-ovpn
+        read -n 1 -s -r -p "  Succes Start Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "2" ]]; then
+        systemctl enable udp-custom
+        systemctl restart udp-custom
+        read -n 1 -s -r -p "  Succes Start Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "3" ]]; then
+        systemctl enable ws-stunnel
+        systemctl restart ws-stunnel
+        read -n 1 -s -r -p "  Succes Start Service. Press any key to Back Menu"
+        exec menu && exit 0
+    elif [[ $vice == "4" ]]; then
+        systemctl enable xray
+        systemctl restart xray
+        read -n 1 -s -r -p "  Succes Start Service. Press any key to Back Menu"
+    exec menu && exit 0
+    elif [[ $vice == "5" ]]; then
+        systemctl stop nginx
+        systemctl disable nginx
+        read -n 1 -s -r -p "  Succes Start Service. Press any key to Back Menu"
+        exec menu && exit 0
+    fi
+fi
+exec menu && exit 0
+}
+echo -e ""
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W}               ● SYSTEM INFORMATION ●              ${U}║${N}"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W} ● Hostname    : $(printf "%-34s${U}%s${N}\n" "$HOSTNAME" "║")"
+echo -e " ${U}║${W} ● OS Name     : $(printf "%-34s${U}%s${N}\n" "$Tipe" "║")"
+echo -e " ${U}║${W} ● Total RAM   : $(printf "%-34s${U}%s${N}\n" "$totalram MB" "║")"
+echo -e " ${U}║${W} ● Public IP   : $(printf "%-34s${U}%s${N}\n" "$MYIP" "║")"
+echo -e " ${U}║${W} ● Domain      : $(printf "%-34s${U}%s${N}\n" "$domain" "║")"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W}            ● SUBSCRIPTION INFORMATION ●           ${U}║${N}"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W} ● Client Name : $(printf "%-34s${U}%s${N}\n" "$Name2" "║")"
+echo -e " ${U}║${W} ● License     : $(printf "%-34s${U}%s${N}\n" "$certificate Days" "║")"
+echo -e " ${U}║${W} ● Version     : $(printf "%-34s${U}%s${N}\n" "$versisc" "║")"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W}              ● SERVICE INFORMATION ●              ${U}║${N}"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W} ● SSH / TUN               : $status_ssh"
+echo -e " ${U}║${W} ● OpenVPN                 : $status_openvpn"
+echo -e " ${U}║${W} ● Dropbear                : $status_beruangjatuh"
+echo -e " ${U}║${W} ● Stunnel4                : $status_stunnel"
+echo -e " ${U}║${W} ● Crons                   : $status_cron"
+echo -e " ${U}║${W} ● Vnstat                  : $status_vnstat"
+echo -e " ${U}║${W} ● XRAYS Vmess TLS         : $status_tls_v2ray"
+echo -e " ${U}║${W} ● XRAYS Vmess None TLS    : $status_nontls_v2ray"
+echo -e " ${U}║${W} ● XRAYS Vless TLS         : $status_tls_vless"
+echo -e " ${U}║${W} ● XRAYS Vless None TLS    : $status_nontls_vless"
+echo -e " ${U}║${W} ● XRAYS Trojan            : $status_virus_trojan"
+echo -e " ${U}║${W} ● Shadowsocks             : $status_shadowsocks"
+echo -e " ${U}║${W} ● Websocket TLS           : $swstls"
+echo -e " ${U}║${W} ● Websocket None TLS      : $swstls"
+echo -e " ${U}║${W} ● Websocket None TLS      : $swstls"
+echo -e " ${U}║${W} ● SSH UDP COSTUM          : $udp"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═══════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W}                ● SCRIPT PREMIUM ●                 ${U}║${N}"
+echo -e " ${U}╚═══════════════════════════════════════════════════╝${N}"
+read -n 1 -s -r -p "  Press any key to Enter Menu Service"
+exec menuservice && exit 0
+exit 0

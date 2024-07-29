@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Input folder
+read -p "Masukkan path folder: " folder_path
+
+# Baris yang akan diganti
+old_line="exit_clean() { exit 0; } trap exit_clean SIGINT"
+
+# Baris pengganti
+new_line="exit_clean() { exit 0; }; trap exit_clean SIGINT"
+
+# Cek apakah folder ada
+if [ -d "$folder_path" ]; then
+    # Ganti baris dalam semua file rekursif di dalam folder
+    files_changed=$(find $folder_path -type f -exec grep -l "$old_line" {} +)
+    for file in $files_changed; do
+        sed -i "s/$old_line/$new_line/g" $file
+        echo "Baris berhasil diganti dalam file: $file"
+    done
+    echo "Baris berhasil diganti dalam semua file di dalam folder $folder_path"
+else
+    echo "Folder $folder_path tidak ditemukan"
+fi

@@ -1,0 +1,67 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+IP=$(curl -sS ipv4.icanhazip.com)
+ISP=$(cat /etc/xray/isp)
+CITY=$(cat /etc/xray/city)
+domain=$(cat /etc/xray/domain)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/botexp/id)
+KEY=$(cat /etc/botexp/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+# Path ke file data
+data_file="/etc/xray/ssh"
+
+# Mendapatkan tanggal dan waktu saat ini
+now=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Looping untuk setiap baris di file data
+while IFS= read -r line; do
+    # Memeriksa apakah baris mengandung kata "Trial"
+    if [[ $line == *"Trial"* ]]; then
+        # Mengambil data dari baris
+        user=$(echo "$line" | awk '{print $2}')
+        exp=$(echo "$line" | awk '{print $3, $4}') # Menggabungkan tanggal dan waktu menjadi satu kolom
+        pass=$(echo "$line" | awk '{print $5}')
+
+        # Menghitung selisih detik antara tanggal kedaluwarsa dan waktu saat ini
+        diff=$(( $(date -d "$exp" +%s) - $(date -d "$now" +%s) ))
+
+        # Jika selisih waktu kurang dari atau sama dengan 0, maka masa aktif telah berakhir
+        if [[ $diff -le 0 ]]; then
+            echo "Menghapus izin untuk pengguna: $user"
+
+            # Memeriksa apakah pengguna masih ada dalam sistem dan menghapusnya jika iya
+            if getent passwd "$user" > /dev/null 2>&1; then
+                while ! userdel "$user" > /dev/null 2>&1; do :; done
+            fi
+
+            # Menghapus file-file terkait dengan pengguna
+            while ! rm -rf /home/vps/public_html/ssh-$user.txt; do :; done
+            while ! rm -rf /etc/xray/sshx/${user}IP; do :; done
+            while ! rm -rf /etc/xray/sshx/${user}login; do :; done
+
+            while ! systemctl restart sshd; do :; done
+            while ! systemctl restart ws-stunnel; do :; done
+
+            TEXT="
+━━━━━━━━━━━━━━━━━━━━━━━
+       <b>☘️ EXPIRED TRIAL SSH ☘️</b>
+━━━━━━━━━━━━━━━━━━━━━━━
+<b>» User :</b> <code>$user</code>
+<b>» Domain :</b> <code>$domain</code>
+<b>» SUDAH EXPIRED</b>
+━━━━━━━━━━━━━━━━━━━━━━━
+» @alawivpn
+━━━━━━━━━━━━━━━━━━━━━━━
+"
+            curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+
+            # Hapus baris dari file data
+            while ! sed -i "/$line/d" "$data_file"; do :; done
+        fi
+    fi
+done < "$data_file"
+
+exit 0

@@ -1,0 +1,1285 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+clear
+REPOKU="https://www.vmessh.cloud"
+REPOGIT="https://github.com/petapaan/izin.git"
+REPOPUSH="github.com/petapaan/izin.git"
+REPOSC="https://iam.scvpn.cloud"
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+export COLOR1="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+export COLBG1="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+U=$COLOR1
+O=$COLBG1
+W='\e[1;37m'
+N='\e[0m'
+ipsaya=$(wget -qO- ipv4.icanhazip.com)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+
+# FUNGSI CEK IZIN IP
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit 1
+    else
+        echo -ne
+    fi
+}
+checking_sc
+
+rm -rf /root/alawi >/dev/null
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+userscript="vmessh"
+emailscript="vmesssh@gmail.com"
+tokenscript=""
+userkey=$userscript
+emailkey=$emailscript
+tokenkey=$tokensceipt
+
+# FUNGSI BUKAN SUPER ADMIN
+function bukan_admin_su(){
+	echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+        echo -e "${U}║             ● PREMIUM SUPER ADMIN ●             ║"
+        echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+        echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+        echo -e "${U}║ [ INFO ] Kamu Bukan Super Admin                 ║"
+        echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+        echo -e "${U}╔══════════════════════ BY ═══════════════════════╗${N}"
+        echo -e "${U}                    ● $author ●                    "
+        echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+        echo -e ""
+        read -n 1 -s -r -p "   Press any key to back on menu"
+        m-ip
+}
+
+# FUNGSI TAMBAH IP
+function tambahip2(){
+if [ "$superadmin" = "VIP" ]; then
+	tambahip
+else
+	bukan_admin_su
+fi
+}
+
+# FUNGSI GANTI IP
+function gantiip2(){
+if [ "$superadmin" = "VIP" ]; then
+	mkdir /root/alawi
+	cd /root/alawi/ &> /dev/null
+	wget ${data_ip} &> /dev/null
+	data=( `cat /root/alawi/registrasi.txt | grep '###' | cut -d ' ' -f 4 | sort | uniq`);
+	now=`date +"%Y-%m-%d"`
+	for user in "${data[@]}"; do
+		nama=$(grep -w "$user" "registrasi.txt" | cut -d ' ' -f 2 | sort | uniq)
+		exp=$(grep -w "$user" "registrasi.txt" | cut -d ' ' -f 3 | sort | uniq)
+		admin=$(grep -w "$user" "registrasi.txt" | cut -d ' ' -f 5 | sort | uniq)
+		d1=$(date -d "$exp" +%s)
+		d2=$(date -d "$now" +%s)
+		exp2=$(( (d1 - d2) / 86400 ))
+		if [[ "$exp2" -le "0" ]]; then
+			sed -i "/### $nama $exp $user $admin/d" registrasi.txt &> /dev/null
+		fi
+	done
+	rm -rf .git
+	git init &> /dev/null
+	git add registrasi.txt
+	git commit -m remove &> /dev/null
+	git branch -M script &> /dev/null
+	git remote add origin ${REPOGIT} &> /dev/null
+	git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+else
+	bukan_admin_su
+fi
+}
+function add_ip(){
+	clear
+	nama2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+	TIMES="10"
+	CHATID=$(cat /etc/per/id)
+	KEY=$(cat /etc/per/token)
+	URL="https://api.telegram.org/bot$KEY/sendMessage"
+	echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+	echo -e "${U} ${N} ${O}               ${WH}● REGISTER IPVPS ●              ${N} ${U} ${N}"
+	echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+	echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+	cd
+	rm -rf /root/alawi >/dev/null
+	until [[ $daftar =~ ^[0-9.]+$ ]]; do
+		read -p "   MASUKKAN IPNYA: " daftar
+		echo -e "${U} ${N}"
+		echo -e "${U} ${N}  [INFO] Checking the IPVPS!"
+		sleep 1
+		REQIP=$(curl -sS ${data_ip} | awk '{print $4}' | grep $daftar)
+		if [[ $daftar = $REQIP ]]; then
+			echo -e "${U} ${N}  [INFO] VPS IP Already Registered!!"
+			echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+			echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+			echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+			echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+			echo -e ""
+			cd
+			rm -rf /root/alawi >/dev/null
+			read -n 1 -s -r -p "   Press any key to back on menu"
+			m-ip
+		else
+			echo -e "${U} ${N}  [INFO] OK! IP VPS is not Registered!"
+			echo -e "${U} ${N}  [INFO] Lets Register it!"
+			sleep 3
+			clear
+		fi
+	done
+	echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+	echo -e "${U} ${N} ${O}               ${WH}● REGISTER IPVPS ●              ${N} ${U} ${N}"
+	echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+	echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+	until [[ $client =~ ^[a-zA-Z0-9_]+$ ]]; do
+		read -p "   User Name  : " client
+	done
+	if [ -z $client ]; then
+		cd
+		echo -e "${U} ${N}  [INFO] Please Input client"
+		echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+		echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+		echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+		echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+		echo -e ""
+		read -n 1 -s -r -p "   Press any key to back on menu"
+		m-ip
+	fi
+	clear
+	if [ "$superadmin" = "VIP" ]; then
+		until [[ $hari =~ ^[0-9]+$ ]]; do
+			read -p " Expired (days): " hari
+		done
+	else
+		until [[ $hari =~ ^[0-3]+$ ]]; do
+			read -p " Expired (days) Max 30 Day: " hari
+		done
+		if [ -z $hari ]; then
+			echo -e "${U} ${N}   [INFO] Please Input exp date"
+			echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+			echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+			echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+			echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+			echo -e ""
+			read -n 1 -s -r -p "   Press any key to back on menu"
+			m-ip
+		fi
+	fi
+	if [ "$superadmin" = "VIP" ]; then
+		x="ok"
+		satu="ON"
+		dua="OFF"
+		while true $x != "ok"; do
+			echo -e "${U} ${N}"
+			echo -e "${U} ${N}  ${U}[01]${N} ● ADMIN   ${U}[02]${N} ● NORMAL"
+			echo -e "${U} ${N}"
+			echo -ne "   Input your choice : "; read list
+			echo ""
+			case "$list" in
+				1) isadmin="$satu";
+				read -p "Limit User (IP): " wip;
+				break;;
+				2) isadmin="$dua";break;;
+			esac
+		done
+	fi
+	U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+	U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+	U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+	U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+	U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+	exp=$(date -d "$hari days" +"%Y-%m-%d")
+	hariini=$(date -d "0 days" +"%Y-%m-%d")
+	git config --global user.email "${emailscript}" &> /dev/null
+	git config --global user.name "RMBL-VIP" &> /dev/null
+	mkdir -p /root/alawi
+	cd /root/alawi
+	wget ${data_ip} &> /dev/null
+	ws=1
+	keyip=$(expr "$U6" - "$ws")
+	sed -i "s/### $U2 $U3 $U4 $U5 $U6/### $U2 $U3 $U4 $U5 ${keyip}/g" registrasi.txt
+	if [ "$superadmin" = "VIP" ]; then
+		echo "### $client $exp $daftar $isadmin $wip @$nama2" >>registrasi.txt
+	else
+		echo "### $client $exp $daftar @$nama2" >>registrasi.txt
+	fi
+	rm -rf .git
+	git init &> /dev/null
+	git add registrasi.txt
+	git commit -m register &> /dev/null
+	git branch -M main &> /dev/null
+	git remote add origin ${REPOGIT} &> /dev/null
+	git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+	sleep 1
+	d1=$(date -d "$exp" +%s)
+	d2=$(date -d "$hariini" +%s)
+	certificate=$(( (d1 - d2) / 86400 ))
+	clear
+	echo -e "${U}╔════════════════════════════════╗${N}"
+	echo -e "${U} ${N} ${O}      ${WH}● REGISTER IPVPS ●      ${N} ${U} ${N}"
+	echo -e "${U}╚════════════════════════════════╝${N}"
+	echo -e "${U}╔════════════════════════════════╗${N}"
+	echo -e "${U} ${N}  Client IP Register Successfully"
+	echo -e "${U} ${N}"
+	echo -e "${U} ${N}  Client Name   : $client"
+	if [ "$superadmin" = "VIP" ]; then
+		echo -e "${U} ${N}  Admin Panel   : $isadmin"
+		echo -e "${U} ${N}  JUMLAH IP    : $wip IP"
+	fi
+	echo -e "${U} ${N}  IP VPS        : $daftar"
+	echo -e "${U} ${N}  Register Date : $hariini"
+	echo -e "${U} ${N}  Expired Date  : $exp"
+	echo -e "${U} ${N}  Durasi Script  : $certificate Days"
+	TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>  🔥 INFO REGISTER IP </b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>CLIENT NAME   : ${client}</b>
+<b>IP VPS CLIENT : ${daftar}</b>
+<b>REGISTER DATE : ${hariini}</b>
+<b>EXPIRED DATE  : ${exp}</b>
+<b>DURASI SCRIPT : ${certificate} Days</b>
+<b>Succes Create this IP</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2Menit Dulu Lalu Masuk Lagi</i>
+"'&reply_markup={"inline_keyboard":[[{"text":"🔥ɪɴsᴛᴀʟʟ sᴄʀɪᴘᴛ","url":"https://t.me/alawivpn"},{"text":"🔥 ʀᴇɴᴇᴡ sᴄʀɪᴘᴛ","url":"https://t.me/alawivpn"}]]}'
+	curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+	cd
+	if [ ! -e /etc/tele ]; then
+		echo -ne
+	else
+		echo "$TEXT" > /etc/notiftele
+		bash /etc/tele
+	fi
+	cd
+	rm -rf /root/alawi >/dev/null
+	rm -rf /etc/github
+	echo -e "${U}╚════════════════════════════════╝${N}"
+	echo -e "${U}╔═════════════ ${WH}BY${N} ${U}═══════════════╗${N}"
+	echo -e "${U} ${N}             ${WH}● $author ●${N}               ${U} ${N}"
+	echo -e "${U}╚════════════════════════════════╝${N}"
+	echo ""
+	read -n 1 -s -r -p "   Press any key to back on menu"
+	m-ip
+}
+
+# FUNGSI MEMBUAT KEY IZIN
+function genkey(){
+clear
+nama2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+MYIP=$(curl -sS ipv4.icanhazip.com)
+U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● GENERATE KEY IPVPS ●           ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+if [ "$superadmin" = "VIP" ]; then
+until [[ $client =~ ^[a-zA-Z0-9_]+$ ]]; do
+read -p " Nama Admin Tanpa Spasi  : " client
+done
+fi
+until [[ $mkey =~ ^[0-9]+$ ]]; do
+read -p " Jumlah Key Mau dibuat : " mkey
+done
+mkkey=$(expr $U6 - $mkey)
+if [[ $mkkey -lt 0 ]]; then
+echo -e " SISA IP KEY HABIS SILAHKAN TOP UP KE ADMIN"
+m-ip
+fi
+if [ "$superadmin" = "VIP" ]; then
+until [[ $totalkey =~ ^[0-9]+$ ]]; do
+read -p " Expired (days) : " totalkey
+done
+else
+until [[ $totalkey =~ ^[0-9]+$ ]]; do
+read -p " Expired (days) Max 30 Day: " totalkey
+done
+if [[ $totalkey -lt 30 ]]; then
+echo -e "Melebihi Durasi Hari Silahkan Diganti durasinya"
+m-ip
+fi
+fi
+if [ "$superadmin" = "VIP" ]; then
+x="ok"
+satu="ON"
+dua=""
+while true $x != "ok"
+do
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  ${U}[01]${N} ● ADMIN   ${U}[02]${N} ● NORMAL"
+echo -e "${U} ${N}"
+echo -ne "   Input your choice : "; read list
+echo ""
+case "$list" in
+1) isadmin="$satu";
+read -p "Limit User (IP): " wip;
+break;;
+2) isadmin="$dua";break;;
+esac
+done
+fi
+key=$(openssl rand -hex 5)
+exp=$(date -d "$hari days" +"%Y-%m-%d")
+hariini=$(date -d "0 days" +"%Y-%m-%d")
+mkdir /root/petapaan
+cd /root/petapaan
+wget ${data_ip} &> /dev/null
+sed -i "s/### $U2 $U3 $U4 $U5 $U6/### $U2 $U3 $U4 $U5 $mkkey/g" registrasi.txt
+git config --global --unset user.name &> /dev/null
+git config --global --unset user.email &> /dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+rm -rf .git
+git init &> /dev/null
+git add /root/petapaan/registrasi.txt &> /dev/null
+git commit -m register &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+sleep 0.5
+rm /root/petapaan/registrasi.txt
+wget https://raw.githubusercontent.com/RMBL-VIP/license/main/key &> /dev/null
+clear
+if [ "$superadmin" = "VIP" ]; then
+x=1
+while [ $x -le $mkey ]
+do
+key2=$(openssl rand -hex 5)
+echo "### $client Key${key2} $totalkey $isadmin $wip" >> key
+echo "### $client Key${key2} $totalkey $isadmin $wip" >> key2
+x=$(( $x + 1 ))
+done
+else
+x=1
+while [ $x -le $mkey ]
+do
+key2=$(openssl rand -hex 5)
+echo "### $U2 Key${key2} $totalkey" >> key
+echo "### $U2 Key${key2} $totalkey" >> key2
+x=$(( $x + 1 ))
+done
+fi
+git config --global --unset user.name &> /dev/null
+git config --global --unset user.email &> /dev/null
+git config --global user.email "${emailkey}" >/dev/null 2>&1
+git config --global user.name "RMBL-VIP" >/dev/null 2>&1
+rm -rf .git
+git init &> /dev/null
+git add /root/petapaan/key
+git commit -m register >/dev/null 2>&1
+git branch -M main >/dev/null 2>&1
+git remote add origin https://github.com/RMBL-VIP/license >/dev/null 2>&1
+git push -f https://${tokenkey}@github.com/RMBL-VIP/license >/dev/null 2>&1
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}      ${WH}● GENERATOR KEY  ●      ${N} ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Sukses Create Key"
+echo -e ""
+if [ "$superadmin" = "VIP" ]; then
+echo -e "${U} ${N}  Nama Admin : $client "
+fi
+echo -e "${U} ${N}  Key SCRIPT : "
+create2=$(cat /root/petapaan/key2 | grep -w "###" | cut -d ' ' -f 3-3)
+echo -e "${create2}"
+echo -e "${U} ${N}  TGL REGIST : $hariini"
+echo -e "${U} ${N}  Durasi VPS : $totalkey Hari"
+echo -e ""
+echo -e ""
+echo -e "${U} ${N}  Silahkan Disave Keynya"
+if [ "$superadmin" = "VIP" ]; then
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>  🔥 Info License Key </b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>Nama ADMIN : $client </b>
+<b>KEY SCRIPT  : </b>
+<code>${create2}</code>
+<b>TGL Register : ${hariini}</b>
+<b>DURASI SCRIPT : ${totalkey} Hari</b>
+<b>Succes Create This Key</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2Menit Dulu Lalu Masuk Lagi</i>
+"'&reply_markup={"inline_keyboard":[[{"text":"🔥ɪɴsᴛᴀʟʟ sᴄʀɪᴘᴛ","url":"https://t.me/rmblvpn1"},{"text":"🔥 ʀᴇɴᴇᴡ sᴄʀɪᴘᴛ","url":"https://t.me/rmblvpn1"}]]}'
+else
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>  🔥 Info License Key </b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>KEY SCRIPT  : </b>
+<code>${create2}</code>
+<b>TGL Register : ${hariini}</b>
+<b>DURASI SCRIPT : ${totalkey} Hari</b>
+<b>Succes Create This Key</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2Menit Dulu Lalu Masuk Lagi</i>
+"'&reply_markup={"inline_keyboard":[[{"text":"🔥ɪɴsᴛᴀʟʟ sᴄʀɪᴘᴛ","url":"https://t.me/rmblvpn1"},{"text":"🔥 ʀᴇɴᴇᴡ sᴄʀɪᴘᴛ","url":"https://t.me/rmblvpn1"}]]}'
+fi
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+rm -rf /root/casper >/dev/null
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════ ${WH}BY${N} ${U}═══════════════╗${N}"
+echo -e "${U} ${N}             ${WH}● $author ●${N}               ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function tambahip(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/petapaan &> /dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan/ &> /dev/null
+wget ${data_ip} &> /dev/null
+clear
+NUMBER_OF_CLIENTS=$(grep -c -E "ON " "registrasi.txt")
+if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● TAMBAH LIMIT IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N}   [INFO] You have no existing clients!"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● TAMBAH LIMIT IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+grep -E "ON " "registrasi.txt" | cut -d ' ' -f 2-6 | nl -s '. '
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
+if [[ ${CLIENT_NUMBER} == '1' ]]; then
+read -rp " Select one client Ctrl + C Exit [1]: " CLIENT_NUMBER
+else
+read -rp " Select one client or Input [0] to back. [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
+if [[ ${CLIENT_NUMBER} == '0' ]]; then
+cd
+rm -rf /root/petapaan >/dev/null
+m-ip
+fi
+fi
+done
+name1=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 2 | sed -n "$CLIENT_NUMBER"p) #name
+exp=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 3 | sed -n "$CLIENT_NUMBER"p) #exp
+ivps1=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 4 | sed -n "$CLIENT_NUMBER"p) #ip
+admin=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 5 | sed -n "$CLIENT_NUMBER"p) #iptambah
+iptambah=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 6 | sed -n "$CLIENT_NUMBER"p) #iptambah
+asd=""
+zx="OFF"
+if [ "$admin" = "$zx" ]; then
+echo -e "BUKAN ADMIN"
+tambahip
+fi
+if [ "$admin" = "$asd" ]; then
+echo -e "BUKAN ADMIN"
+tambahip
+fi
+until [[ $ipbaru =~ ^[0-9]+$ ]]; do
+read -rp "   Input Angka Tambahan Limit IPNYA: " ipbaru
+done
+ipbaru2=$(expr "$iptambah" + "$ipbaru")
+sed -i "s/### $name1 $exp $ivps1 $admin $iptambah/### $name1 $exp $ivps1 $admin $ipbaru2/g" registrasi.txt &> /dev/null
+hariini2=$(date -d "0 days" +"%Y-%m-%d")
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m remove &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔══════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}         ${WH}● TAMBAH IPVPS ADMIN ●        ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client IP Successfully Add"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  Name Client   : $name1"
+echo -e "${U} ${N}  IP OLD RESS  : $iptambah IP"
+echo -e "${U} ${N}  NEW ADD IP  : $ipbaru IP"
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>  🔥 INFO TAMBAH IP RESELLER </b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>CLIENT NAME   : <code>${name1} </code></b>
+<b>SISA IP  : <code>${iptambah} IP</code></b>
+<b>TAMBAHAN IP  : <code>>${ipbaru} IP</code></b>
+<b>Succes Tambah IP Reseller</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════ ${WH}BY${N} ${U}═════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function gantinama(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/casper &> /dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan/ &> /dev/null
+wget ${data_ip} &> /dev/null
+clear
+grep -E "$uu$listuser" "registrasi.txt" >>/root/petapaan/client
+if [ "$superadmin" = "VIP" ]; then
+NUMBER_OF_CLIENTS=$(grep -c -E "^### " "registrasi.txt")
+else
+NUMBER_OF_CLIENTS=$(grep -c -E "^###" "client")
+fi
+if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● GANTI NAMA IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N}   [INFO] You have no existing clients!"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● GANTI NAMA IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+if [ "$superadmin" = "VIP" ]; then
+grep -E "^### " "registrasi.txt" | cut -d ' ' -f 2-4 | nl -s '. '
+else
+grep -E "^###" "client" | cut -d ' ' -f 2-4 | nl -s '. '
+fi
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
+if [[ ${CLIENT_NUMBER} == '1' ]]; then
+read -rp " Select one client Ctrl + C Exit [1]: " CLIENT_NUMBER
+else
+read -rp " Select one client or Input [0] to back. [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
+if [[ ${CLIENT_NUMBER} == '0' ]]; then
+cd
+rm -rf /root/petapaan >/dev/null
+m-ip
+fi
+fi
+done
+read -rp "   Please Input New Name : " namabaru
+if [ "$superadmin" = "VIP" ]; then
+name1=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 2 | sed -n "$CLIENT_NUMBER"p) #name
+exp=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 3 | sed -n "$CLIENT_NUMBER"p) #exp
+ivps1=$(grep -E "^### " "registrasi.txt" | cut -d ' ' -f 4 | sed -n "$CLIENT_NUMBER"p) #ip
+else
+name1=$(grep -E "^### " "client" | cut -d ' ' -f 2 | sed -n "$CLIENT_NUMBER"p) #name
+exp=$(grep -E "^### " "client" | cut -d ' ' -f 3 | sed -n "$CLIENT_NUMBER"p) #exp
+ivps1=$(grep -E "^### " "client" | cut -d ' ' -f 4 | sed -n "$CLIENT_NUMBER"p) #ip
+fi
+sed -i "s/### $name1/### $namabaru/g" registrasi.txt &> /dev/null
+hariini2=$(date -d "0 days" +"%Y-%m-%d")
+TEXTD="
+Name old     : $namabaru
+Name New    : $name1
+Status        : succes change
+"
+echo "${TEXTD}" >>/root/petapaan/delete_log  &> /dev/null
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m remove &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔══════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}         ${WH}● GANTI NAMA IPVPS ●        ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client IP Successfully Change"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  Name old    : $name1"
+echo -e "${U} ${N}  Name New   : $namabaru"
+echo -e "${U} ${N}  IPVPS        : $ivps1"
+cd
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b> 🔥 INFO GANTI NAMA IPVPS</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>Name Old   : <code>${name1}</code></b>
+<b>New Name  : <code>${namabaru}</code></b>
+<b>Succes Change</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+cd
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════ ${WH}BY${N} ${U}═════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function renewipvps(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/petapaan >/dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan
+wget ${data_ip} &> /dev/null
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● RENEW IPVPS ●                ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $iprenew =~ ^[0-9.]+$ ]]; do
+read -p "   MASUKKAN IPNYA: " iprenew
+REQIP=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}')
+if [[ $iprenew = $REQIP ]]; then
+echo -ne
+else
+echo -e "${U} ${N}  [INFO] IP VPS NOT FOUND!"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+done
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● RENEW IPVPS ●                ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $masaaktif =~ ^[0-3]+$ ]]; do
+echo ""
+read -p " Expired (days) Max 30 Day: " masaaktif
+done
+if [ -z $masaaktif ]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● RENEW IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  [INFO] Please Input Correct Number"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+name1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $2}') #name
+exp=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $3}') #exp
+ivps1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}') #ip
+trial=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $5}') #ip
+MYIP=$(curl -sS ipv4.icanhazip.com)
+UU2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+now=$(date +%Y-%m-%d)
+d1=$(date -d "$exp" +%s)
+d2=$(date -d "$now" +%s)
+exp2=$(((d1 - d2) / 86400))
+exp3=$(($exp2 + $masaaktif))
+exp4=$(date -d "$exp3 days" +"%Y-%m-%d")
+ws=1
+regip2=$(expr "$U6" - "$ws")
+sed -i "s/### $U2 $U3 $U4 $U5 $U6/### $U2 $U3 $U4 $U5 ${regip2}/g" registrasi.txt
+sed -i "s/### $name1 $exp $ivps1 $trial/### $name1 $exp4 $ivps1 @$UU2/g" registrasi.txt
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m renew &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}      ${WH}● RENEW IPVPS ●      ${N} ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client IP VPS Renew Successfully"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  IP VPS        : $ivps1"
+echo -e "${U} ${N}  Renew Date    : $now"
+echo -e "${U} ${N}  Days Added    : $masaaktif Days"
+echo -e "${U} ${N}  Expired Date  : $exp4"
+echo -e "${U} ${N}  Client Name   : $name1"
+cd
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b> 🔥 RENEW IPVPS SCRIPT</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>CLIENT NAME   : <code>${name1}</code></b>
+<b>IP VPS CLIENT  : <code>${ivps1}</code></b>
+<b>RENEW DATE    : <code>${now}</code></b>
+<b>DAYS ADDED    : <code>${masaaktif} Days</code></b>
+<b>EXPIRED DATE  : <code>${exp4}</code></b>
+<b>Succes Renew This IP</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+cd
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════ ${WH}BY${N} ${U}═══════════════╗${N}"
+echo -e "${U} ${N}       ${WH}● $author ●${N}         ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function gantinamabaru(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/casper >/dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan
+wget ${data_ip} &> /dev/null
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● CHANGE NAME ●                ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $iprenew =~ ^[0-9.]+$ ]]; do
+read -p "   MASUKKAN IPNYA: " iprenew
+REQIP=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}')
+if [[ $iprenew = $REQIP ]]; then
+echo -ne
+else
+echo -e "${U} ${N}  [INFO] IP VPS NOT FOUND!"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+done
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● CHANGE NAME ●                ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo ""
+read -p " INPUT NAMA BARU: " masaaktif
+if [ -z $masaaktif ]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● CHANGE NAME ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  [INFO] Please Input Correct Number"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+name1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $2}') #name
+exp=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $3}') #exp
+ivps1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}') #ip
+trial=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $5}') #ip
+MYIP=$(curl -sS ipv4.icanhazip.com)
+UU2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+ws=1
+regip2=$(expr "$U6" - "$ws")
+sed -i "s/### $U2 $U3 $U4 $U5 $U6/### $U2 $U3 $U4 $U5 ${regip2}/g" registrasi.txt
+sed -i "s/### $name1 $exp $ivps1 $trial/### $masaaktif $exp $ivps1 @$UU2/g" registrasi.txt
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m renew &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}      ${WH}● CHANGE NAME ●      ${N} ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client CHANGE Name Successfully"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  IP VPS     : $ivps1"
+echo -e "${U} ${N}  Name Old   : $name1"
+echo -e "${U} ${N}  Name New   : $masaaktif"
+cd
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b> 🔥 CHANGE NAME IPVPS</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>IP VPS CLIENT  : <code>${ivps1}</code></b>
+<b>CLIENT NAME OLD    : <code>${name1}</code></b>
+<b>CLIENT NAME NEW    : <code>${masaaktif} Days</code></b>
+<b>Succes Change Name</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+cd
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════ ${WH}BY${N} ${U}═══════════════╗${N}"
+echo -e "${U} ${N}       ${WH}● $author ●${N}         ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function gantiipbaru(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/casper >/dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "casper9" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan
+wget ${data_ip} &> /dev/null
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● CHANGE IPVPS ●               ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $iprenew =~ ^[0-9.]+$ ]]; do
+read -p "   MASUKKAN IPNYA: " iprenew
+REQIP=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}')
+if [[ $iprenew = $REQIP ]]; then
+echo -ne
+else
+echo -e "${U} ${N}  [INFO] IP VPS NOT FOUND!"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+done
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● CHANGE IPVPS ●               ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $masaaktif =~ ^[0-9.]+$ ]]; do
+echo ""
+read -p " MASUKKAN IP BARU: " masaaktif
+done
+if [ -z $masaaktif ]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● CHANGE IPVPS ●             ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  [INFO] Please Input Correct Number"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+name1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $2}') #name
+exp=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $3}') #exp
+ivps1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}') #ip
+trial=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $5}') #ip
+MYIP=$(curl -sS ipv4.icanhazip.com)
+UU2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+ws=1
+regip2=$(expr "$U6" - "$ws")
+sed -i "s/### $U2 $U3 $U4 $U5 $U6/### $U2 $U3 $U4 $U5 ${regip2}/g" registrasi.txt
+sed -i "s/### $name1 $exp $ivps1/### $name1 $exp $masaaktif/g" registrasi.txt
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m renew &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}     ${WH}● CHANGE IPVPS ●      ${N} ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client IP VPS Change Successfully"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  IP OLD        : $ivps1"
+echo -e "${U} ${N}  IP NEW        : $masaaktif"
+echo -e "${U} ${N}  Expired Date  : $U4"
+echo -e "${U} ${N}  Client Name   : $name1"
+cd
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b> 🔥 CHANGE IPVPS SCRIPT</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>CLIENT NAME : <code>${name1}</code></b>
+<b>IP VPS OLD  : <code>${ivps1}</code></b>
+<b>IP VPS NEW  : <code>${masaaktif}</code></b>
+<b>Succes Change</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+cd
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+cd
+rm -rf /root/petapaan >/dev/null
+rm -rf /etc/github
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo -e "${U}╔════════════ ${WH}BY${N} ${U}═══════════════╗${N}"
+echo -e "${U} ${N}       ${WH}● $author ●${N}         ${U} ${N}"
+echo -e "${U}╚════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function delipbaru(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+TIMES="10"
+CHATID=$(cat /etc/per/id)
+KEY=$(cat /etc/per/token)
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+cd
+rm -rf /root/petapaan >/dev/null
+git config --global user.email "${emailscript}" &> /dev/null
+git config --global user.name "RMBL-VIP" &> /dev/null
+mkdir /root/petapaan
+cd /root/petapaan
+wget ${data_ip} &> /dev/null
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● DELETE IPVPS ●               ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+until [[ $iprenew =~ ^[0-9.]+$ ]]; do
+read -p "   MASUKKAN IPNYA: " iprenew
+REQIP=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}')
+if [[ $iprenew = $REQIP ]]; then
+echo -ne
+else
+echo -e "${U} ${N}  [INFO] IP VPS NOT FOUND!"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+fi
+done
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}                ${WH}● DELETE IPVPS ●               ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " Proses Deleting"
+name1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $2}') #name
+exp=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $3}') #exp
+ivps1=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $4}') #ip
+trial=$(curl -sS ${data_ip} | grep $iprenew | awk '{print $5}') #ip
+MYIP=$(curl -sS ipv4.icanhazip.com)
+UU2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U2=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+U3=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $3}')
+U4=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $4}')
+U5=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+U6=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+sed -i "/### $name1 $exp $ivps1 $trial/d" registrasi.txt &> /dev/null
+hariini2=$(date -d "0 days" +"%Y-%m-%d")
+TEXTD="
+Name     : $name1
+IPVPS    : $ivps1
+Status   : Deleted on  $hariini2
+"
+echo "${TEXTD}" >>/root/petapaan/delete_log  &> /dev/null
+rm -rf .git
+git init &> /dev/null
+git add registrasi.txt
+git commit -m remove &> /dev/null
+git branch -M main &> /dev/null
+git remote add origin ${REPOGIT} &> /dev/null
+git push -f https://${tokenscript}@${REPOPUSH} &> /dev/null
+clear
+echo -e "${U}╔══════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}         ${WH}● DELETE IPVPS ●        ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════╗${N}"
+echo -e "${U} ${N}  Client IP Deleted Successfully"
+echo -e "${U} ${N}"
+echo -e "${U} ${N}  IP VPS       : $ivps1"
+echo -e "${U} ${N}  Expired Date : $exp"
+echo -e "${U} ${N}  Client Name  : $name1"
+cd
+TEXT="
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>  🔥 INFO DELETE IP </b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<b>CLIENT NAME   : <code>${name1}</code></b>
+<b>IP VPS CLIENT  : <code>${ivps1}</code></b>
+<b>EXPIRED DATE  : <code>${exp}</code></b>
+<b>Succes Delete this IP</b>
+<code>◇━━━━━━━━━━━━━━◇</code>
+<i>Tunggu 2menit Dulu Lalu Masuk Lagi</i>
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+cd
+if [ ! -e /etc/tele ]; then
+echo -ne
+else
+echo "$TEXT" > /etc/notiftele
+bash /etc/tele
+fi
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo -e "${U}╔════════════════ ${WH}BY${N} ${U}═════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════╝${N}"
+echo ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+function useripvps(){
+clear
+MYIP=$(curl -sS ipv4.icanhazip.com)
+listuser=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $2}')
+superadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $7}')
+uu=$(curl -sS https://pastebin.com/raw/BZ9Fcnqf)
+author=$(cat /etc/profil)
+cd
+mkdir /root/petapaan
+cd /root/petapaan/
+wget ${data_ip} &> /dev/null
+clear
+grep -E "$uu$listuser" "registrasi.txt" >>/root/petapaan/client
+grep -E "@trial" "registrasi.txt" >>/root/petapaan/client
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}               ${WH}● LIST IPVPS ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+if [ "$superadmin" = "VIP" ]; then
+grep -E "^### " "registrasi.txt" | cut -d ' ' -f 2-4 | nl -s '. '
+else
+grep -E "^###" "client" | cut -d ' ' -f 2-4 | nl -s '. '
+fi
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+cd
+rm -rf /root/petapaan >/dev/null
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+m-ip
+}
+Isadmin=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $5}')
+registrasi.txt=$(curl -sS ${data_ip} | grep $MYIP | awk '{print $6}')
+if [ "$Isadmin" = "ON" ]; then
+echo -ne
+else
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}            ${WH}● PREMIUM USER ONLY ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} [INFO] Only PRO Users Can Use This Panel"
+echo -e "${U} ${N} [INFO] Buy Premium Membership : "
+echo -e "${U} ${N} [INFO] PM : https://t.me/rmblvpn1"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+menu
+fi
+if [[ $registrasi.txt -le 0 ]]; then
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} ${O}            ${WH}● PREMIUM USER ONLY ●              ${N} ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U} ${N} [INFO] SISA IP/KEY REGIST KAMU SUDAH HABIS"
+echo -e "${U} ${N} [INFO] Buy IP/KEY Premium SUPER ADMIN : "
+echo -e "${U} ${N} [INFO] PM : https://t.me/rmblvpn1"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔══════════════════════ ${WH}BY${N} ${U}═══════════════════════╗${N}"
+echo -e "${U} ${N}                ${WH}● $author ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+read -n 1 -s -r -p "   Press any key to back on menu"
+menu
+fi
+clear
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "${U}║${N}${O}            ${WH}● PANEL RESELLER IP ●                ${N}${U}║ ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e "   ${U} [01]${N} ● ${WH}ADD IPVPS      ${U} [05]${N} ● ${WH}RENEW IPVPS"
+echo -e "   ${U} [02]${N} ● ${WH}KEY GENERATOR${U}   [06]${N} ● ${WH}LIST IPVPS"
+echo -e "   ${U} [03]${N} ● ${WH}DELETE IPVPS   ${U} [07]${N} ● ${WH}CHANGE IPVPS"
+echo -e "   ${U} [04]${N} ● ${WH}CHANGE NAME    ${U} [08]${N} ● ${WH}TAMBAH IP [ADMIN]"
+echo -e "   "
+echo -e "   ${U} [00]${N} ● ${WH}GO BACK"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e "${U}╔═════════════════ ${WH}SISA IP REG${N} ${U}═══════════════════╗${N}"
+echo -e "${U} ${N}                    ${WH}● $registrasi.txt ●${N}                 ${U} ${N}"
+echo -e "${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e ""
+echo -ne " ${WH}Select menu ${U}: ${WH}"; read opt
+case $opt in
+01 | 1) clear ; add_ip ;;
+02 | 2) clear ; genkey ;;
+03 | 3) clear ; delipbaru ;;
+04 | 4) clear ; gantinamabaru ;;
+05 | 5) clear ; renewipvps ;;
+06 | 6) clear ; useripvps ;;
+07 | 7) clear ; gantiipbaru;;
+08 | 8) clear ; tambahip2 ;;
+09 | 9) clear ; gantiip2 ;;
+00 | 0) clear ; menu ;;
+*) clear ; m-ip ;;
+esac
+exit 0

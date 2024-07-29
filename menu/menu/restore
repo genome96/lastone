@@ -1,0 +1,126 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+export domain1=$(cat /etc/xray/domain)
+REPOKU="https://www.vmessh.cloud"
+REPOSC="https://iam.scvpn.cloud"
+biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+export N="\e[0m"
+export G='\033[1;92m';
+export R="\033[1;91m"
+export U="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+export O="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+W='\033[1;37m'
+ipsaya=$(wget -qO- ipv4.icanhazip.com)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit 1
+    else
+        echo -ne
+    fi
+}
+checking_sc
+mkdir -p /etc/botexp/
+clear
+echo -e "${U}
+ ╔═════════════════════════════════════════════════╗
+ ║${W}       Fitur ini hanya bisa digunakan oleh       ${U}║
+ ║${W}         VPS yang terinstall script ini!         ${U}║
+ ║${W}                                                 ${U}║
+ ║${W}     Mohon sediakan file backup.zip di /root/    ${U}║
+ ║${W}            untuk me-restore data VPS            ${U}║
+ ╚═════════════════════════════════════════════════╝
+${N}"
+cd
+echo
+echo -e " [ ${U}INFO${N} ] Sedang mengecek . . ."
+
+# Mengecek apakah file backup.zip ada
+if [ -f "backup.zip" ]; then
+    echo -e " [ ${U}INFO${N} ] file ${G}ditemukan!${N}"
+    unzip backup.zip &> /dev/null
+    rm -f backup.zip
+    sleep 1
+    cd /root/backup
+    echo -e " [ ${U}INFO${N} ] Sedang me-restore . . ."
+else
+    echo -e " [ ${U}INFO${N} ] File ${R}tidak ditemukan!${N}"
+    read -n 1 -s -r -p " $(echo -e "[ ${U}INFO${N} ] Tekan apapun untuk keluar . . . ")"
+    clear
+    cd
+    echo " Letakkan file ${G}backup.zip${N} di sini!"
+    echo
+    exit 1
+fi
+cp -r passwd /etc/ &> /dev/null
+cp -r group /etc/ &> /dev/null
+cp -r shadow /etc/ &> /dev/null
+cp -r xray /etc/xray/config.json &> /dev/null
+cp -r ssh /etc/xray/ssh &> /dev/null
+cp -r domain /etc/xray/domain &> /dev/null
+cp -r domain /etc/v2ray/domain &> /dev/null
+cp -r idchat /usr/bin/idchat &> /dev/null
+cp -r token /usr/bin/token &> /dev/null
+cp -r id /etc/per/id &> /dev/null
+cp -r token2 /etc/per/token &> /dev/null
+cp -r loginid /etc/perlogin/id &> /dev/null
+cp -r logintoken /etc/perlogin/token &> /dev/null
+cp -r expid /etc/botexp/id &> /dev/null
+cp -r exptoken /etc/botexp/token &> /dev/null
+cp -r public_html /home/vps/ &> /dev/null
+cp -r gshadow /etc/ &> /dev/null
+cp -r sshx /etc/xray/ &> /dev/null
+cp -r vmess /etc/ &> /dev/null
+cp -r vless /etc/ &> /dev/null
+cp -r trojan /etc/ &> /dev/null
+cp -r issue /etc/issue.net &> /dev/null
+domain2=$(cat /etc/xray/domain)
+echo "IP=$domain2" > /var/lib/ipvps.conf
+echo -e " [ ${U}INFO${N} ] Restore data VPS selesai!"
+sleep 1
+echo -e " [ ${U}INFO${N} ] Me-restart semua service . . ."
+systemctl restart xray
+systemctl restart nginx
+IP=$(curl -sS ipv4.icanhazip.com)
+TD=$(date +"%d-%m-%Y | %H:%M %Z")
+domain=$(cat /etc/xray/domain)
+KEY=$(cat /usr/bin/token)
+CHATID=$(cat /usr/bin/idchat)
+TIMES="10"
+URL="https://api.telegram.org/bot$KEY/sendMessage"
+ISP=$(cat /etc/xray/isp)
+CITY=$(cat /etc/xray/city)
+TEKS="
+━━━━━━━━━━━━━━━━━━━━━━━
+  <b>☘ RESTORE VPS COMPLETED ☘</b>
+━━━━━━━━━━━━━━━━━━━━━━━
+<b>● IP :</b> <code>$IP</code>
+<b>● Old Host :</b> <code>$domain1</code>
+<b>● New Host :</b> <code>$domain</code>
+<b>● ISP :</b> <code>$ISP</code>
+<b>● CITY :</b> <code>$CITY</code>
+━━━━━━━━━━━━━━━━━━━━━━━
+       <code>$TD</code>
+━━━━━━━━━━━━━━━━━━━━━━━
+» @alawivpn
+"
+curl -s --max-time $TIMES -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEKS&parse_mode=html" $URL >/dev/null
+
+cd
+rm -rf /root/backup
+echo -e " [ ${U}INFO${N} ] Selesai!"
+sleep 1
+echo
+read -n 1 -s -r -p " Ketik apapun untuk kembali ke menu "
+exec menu && exit 0
+exit 0

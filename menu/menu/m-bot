@@ -1,0 +1,360 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+engkok=$0
+REPOKU="https://www.vmessh.cloud"
+REPOSC="https://iam.scvpn.cloud"
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+export N='\e[0m'
+export R='\e[1;31m'
+export G='\e[1;32m'
+export Y='\e[1;33m'
+export C='\e[1;36m'
+export W='\e[1;37m'
+export COLOR1="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+export COLBG1="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+U=$COLOR1
+O=$COLBG1
+ipsaya=$(curl -sS ipv4.icanhazip.com)
+domain=$(cat /etc/xray/domain)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit
+    else
+        echo -ne
+    fi
+}
+checking_sc
+#install
+function install-bot(){
+	clear
+	cd /usr/bin
+	wget -q ${REPOSC}/bot/bot.zip
+	unzip bot.zip > /dev/null
+	mv bot/* /usr/bin
+	chmod +x /usr/bin/*
+	rm -rf bot.zip
+	rm -rf bot/
+	wget -q ${REPOSC}/bot/kyt.zip
+	unzip kyt.zip > /dev/null
+	chmod +x /usr/bin/*
+	rm -rf /usr/bin/*.zip
+	cd
+	rm -rf /etc/tele
+    clear
+echo
+echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${Y}       Tutorial Create Bot and ID Telegram       ${U}║${N}"
+echo -e " ${U}║                                                 ║${N}"
+echo -e " ${U}║${W} [${U} A ${W}] Create Bot and Token Bot in @BotFather    ${U}║${N}"
+echo -e " ${U}║${W} [${U} B ${W}] Get ID Telegram in @MissRose_bot          ${U}║${N}"
+echo -e " ${U}║${W}       Type /info or /id and copy your ID, done  ${U}║${N}"
+echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+rm -rf /usr/bin/ddsdswl.session
+rm -rf /usr/bin/kyt/var.txt
+rm -rf /usr/bin/kyt/database.db
+echo -e ""
+echo -e "${W} Masukkan Token bot Telegram kamu!${N}"
+read -rp "$(echo -e "${C} ---> : ${N}")" bottoken
+echo -e "${W} Masukkan ID Telegram kamu!${N}"
+read -rp "$(echo -e "${C} ---> : ${N}")" admin
+
+cat >/usr/bin/kyt/var.txt <<EOF
+BOT_TOKEN="$bottoken"
+ADMIN="$admin"
+DOMAIN="$domain"
+EOF
+
+echo 'TEXT=$'"(cat /etc/notiftele)"'' > /etc/tele
+echo "TIMES=10" >> /etc/tele
+echo 'KEY=$'"(cat /etc/per/token)"'' >> /etc/tele
+
+# Cek dan isi file jika kosong
+check_and_fill() {
+    file_path=$1
+    content=$2
+
+    # Pastikan direktori tujuan ada
+    dir_path=$(dirname "$file_path")
+    mkdir -p "$dir_path"
+
+    # Periksa dan isi file jika kosong
+    file_content=$(cat "$file_path" 2>/dev/null)
+    if [ -z "$file_content" ]; then
+        echo "$content" > "$file_path"
+    fi
+}
+
+# Daftar file dan konten yang akan diisi
+check_and_fill "/etc/per/token" "$bottoken"
+check_and_fill "/etc/per/id" "$admin"
+check_and_fill "/usr/bin/token" "$bottoken"
+check_and_fill "/usr/bin/idchat" "$admin"
+check_and_fill "/etc/perlogin/token" "$bottoken"
+check_and_fill "/etc/perlogin/id" "$admin"
+check_and_fill "/etc/botexp/token" "$bottoken"
+check_and_fill "/etc/botexp/id" "$admin"
+
+clear
+
+
+cat > /etc/systemd/system/kyt.service << END
+[Unit]
+Description=Simple kyt - @kyt
+After=syslog.target network-online.target
+
+[Service]
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/python3 -m kyt
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+END
+
+systemctl daemon-reload &> /dev/null
+systemctl enable kyt &> /dev/null
+systemctl start kyt &> /dev/null
+systemctl restart kyt &> /dev/null
+echo
+echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+echo
+echo -e " ${G}Selesai"
+echo -e " ${W}Instalasi ${G}selesai.${W} Ketik ${Y}/menu ${W}atau ${Y}.menu ${W}di bot kamu${N}"
+echo
+read -n 1 -s -r -p " Press any key to back on menu"
+exec menu && exit 0
+}
+cd
+clear
+if [ -e /usr/bin/kyt ]; then
+echo -ne
+else
+install-bot
+fi
+
+#isi data
+echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${W} [${U}01${W}] ${U}●${W} GANTI BOT                                ${U}║${N}"
+echo -e " ${U}║${W} [${U}02${W}] ${U}●${W} UPDATE BOT                               ${U}║${N}"
+echo -e " ${U}║${W} [${U}03${W}] ${U}●${W} DELETE BOT                               ${U}║${N}"
+echo -e " ${U}║${W} [${U}04${W}] ${U}●${W} GANTI /start dan /menu                   ${U}║${N}"
+echo -e " ${U}║${W} [${U}05${W}] ${U}●${W} TAMBAH ADMIN                             ${U}║${N}"
+echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+until [[ $pilihanmu =~ ^[1-5]+$ ]]; do
+    read -p "  Please select numbers 1 sampai 5 : " pilihanmu
+    if [[ $pilihanmu == "0" ]]; then
+        exec menu && exit 0
+        break
+    fi
+done
+
+if [[ $pilihanmu == "1" ]]; then
+    clear
+    echo
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${Y}       Tutorial Create Bot and ID Telegram       ${U}║${N}"
+    echo -e " ${U}║                                                 ║${N}"
+    echo -e " ${U}║${W} [${U} A ${W}] Create Bot and Token Bot in @BotFather    ${U}║${N}"
+    echo -e " ${U}║${W} [${U} B ${W}] Get ID Telegram in @MissRose_bot          ${U}║${N}"
+    echo -e " ${U}║${W}       Type /info or /id and copy your ID, done  ${U}║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    rm -rf /usr/bin/ddsdswl.session
+    rm -rf /usr/bin/kyt/var.txt
+    rm -rf /usr/bin/kyt/database.db
+    echo -e ""
+    echo -e "${W} Masukkan Token bot Telegram kamu!${N}"
+    read -rp "$(echo -e "${C} ---> : ${N}")" bottoken
+    echo -e "${W} Masukkan ID Telegram kamu!${N}"
+    read -rp "$(echo -e "${C} ---> : ${N}")" admin
+
+cat >/usr/bin/kyt/var.txt <<EOF
+BOT_TOKEN="$bottoken"
+ADMIN="$admin"
+DOMAIN="$domain"
+EOF
+
+    echo "$bottoken" > /etc/per/token
+    echo "$admin" > /etc/per/id
+    clear
+
+cat > /etc/systemd/system/kyt.service << END
+[Unit]
+Description=Simple kyt - @kyt
+After=syslog.target network-online.target
+
+[Service]
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/python3 -m kyt
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+END
+
+    systemctl daemon-reload &> /dev/null
+    systemctl enable kyt &> /dev/null
+    systemctl start kyt &> /dev/null
+    systemctl restart kyt &> /dev/null
+
+    clear
+    echo
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    echo
+    echo -e " ${G}Selesai"
+    echo -e " ${W}Instalasi ${G}selesai.${W} Ketik ${Y}/menu ${W}atau ${Y}.menu ${W}di bot kamu${N}"
+    echo
+    read -n 1 -s -r -p "Press any key to back on menu"
+    exec menu && exit 0
+fi
+if [[ $pilihanmu == "2" ]]; then
+    clear
+    cp -r /usr/bin/kyt/var.txt /usr/bin &> /dev/null
+    rm -rf /usr/bin/kyt.zip
+    rm -rf /usr/bin/kyt
+    sleep 2
+    cd /usr/bin
+    wget -q ${REPOSC}/bot/bot.zip
+    unzip bot.zip &> /dev/null
+    mv bot/* /usr/bin
+    chmod +x /usr/bin/*
+    rm -rf bot.zip
+    clear
+    wget -q ${REPOSC}/bot/kyt.zip
+    unzip kyt.zip &> /dev/null
+    pip3 install -r kyt/requirements.txt
+    clear
+    cd /usr/bin/kyt/bot
+    chmod +x *
+    mv -f * /usr/bin
+    rm -rf /usr/bin/kyt/bot
+    rm -rf /usr/bin/*.zip
+    mv /usr/bin/var.txt /usr/bin/kyt
+    cd
+    clear
+
+    systemctl daemon-reload &> /dev/null
+    systemctl stop kyt &> /dev/null
+    systemctl enable kyt &> /dev/null
+    systemctl start kyt &> /dev/null
+    systemctl restart kyt &> /dev/null
+    clear
+    echo -e " ${G}Succes ${W}Update BOT Telegram${N}"
+    echo -e " ${W}Silahkan Tes bot-nya!${N}"
+    read -n 1 -s -r -p " Press any key to back on menu"
+    exec menu && exit 0
+fi
+
+if [[ $pilihanmu == "3" ]]; then
+    clear
+    rm -rf /usr/bin/kyt
+    echo -e " ${G}Succes ${R}delete ${W}BOT Telegram${N}"
+    read -n 1 -s -r -p " Press any key to back on menu"
+    exec menu && exit 0
+fi
+
+if [[ $pilihanmu == "4" ]]; then
+    clear
+    echo
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║${W}    Ini digunakan jika Mau memakai 1 bot saja    ${U}║${N}"
+    echo -e " ${U}║${W}      tanpa perlu memakai banyak bot create      ${U}║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    echo -e ""
+    read -rp "$(echo -e " Input Nama Panggilan Bot-nya ${C}---> : ${N}")" namabot
+
+    sed -i "s/77/${namabot}/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/77/${namabot}/g" /usr/bin/kyt/modules/start.py
+    sed -i "s/"sshovpn"/"sshovpn${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/"vmess"/"vmess${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/"vless"/"vless${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/"trojan"/"trojan${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s&.menu|/menu&.${namabot}|/${namabot}&g" /usr/bin/kyt/modules/menu.py
+    sed -i "s&.start|/start&.start${namabot}|/start${namabot}&g" /usr/bin/kyt/modules/start.py
+    sed -i "s&.admin|/admin&.admin${namabot}|/admin${namabot}&g" /usr/bin/kyt/modules/admin.py
+    sed -i "s/b'start'/b'start${namabot}'/g" /usr/bin/kyt/modules/start.py
+    sed -i "s/b'admin'/b'admin${namabot}'/g" /usr/bin/kyt/modules/admin.py
+    sed -i "s/b'menu'/b'${namabot}'/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/b'menu'/b'${namabot}'/g" /usr/bin/kyt/modules/start.py
+    sed -i "s/add-ip/add-ip${namabot}/g" /usr/bin/kyt/modules/admin.py
+    sed -i "s/change-ip/change-ip${namabot}/g" /usr/bin/kyt/modules/admin.py
+    sed -i "s/add-key/add-key${namabot}/g" /usr/bin/kyt/modules/admin.py
+    sed -i "s/7-/${namabot}-/g" /usr/bin/kyt/modules/vmess.py
+    sed -i "s/b'vmess'/b'vmess${namabot}'/g" /usr/bin/kyt/modules/vmess.py
+    sed -i "s/7-/${namabot}-/g" /usr/bin/kyt/modules/vless.py
+    sed -i "s/b'vless'/b'vless${namabot}'/g" /usr/bin/kyt/modules/vless.py
+    sed -i "s/7-/${namabot}-/g" /usr/bin/kyt/modules/trojan.py
+    sed -i "s/b'trojan'/b'trojan${namabot}'/g" /usr/bin/kyt/modules/trojan.py
+    sed -i "s/7-/${namabot}-/g" /usr/bin/kyt/modules/ssh.py
+    sed -i "s/b'sshovpn'/b'sshovpn${namabot}'/g" /usr/bin/kyt/modules/ssh.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/vmess.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/vless.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/trojan.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/ssh.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/start.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/setting.py
+    sed -i "s/"menu"/"${namabot}"/g" /usr/bin/kyt/modules/info.py
+    sed -i "s/"start"/"start${namabot}"/g" /usr/bin/kyt/modules/menu.py
+    clear
+    echo -e " ${G}Succes ${W}Ganti Nama Panggilan BOT Telegram"
+    echo -e " Ketik ${U}.${namabot} ${W}atau ${U}/${namabot}${N}"
+    echo -e " Ketik ${U}.start${namabot} ${W}atau ${U}/start${namabot}${N}"
+    systemctl restart kyt
+    read -n 1 -s -r -p " Press any key to back on menu"
+    exec menu && exit 0
+fi
+
+
+if [[ $pilihanmu == "5" ]]; then
+    clear
+    echo
+    echo -e " ${U}╔═════════════════════════════════════════════════╗${N}"
+    echo -e " ${U}║ ${O}         ● BOT PANEL CREATE ACCOUNTS ●         ${N}${U} ║${N}"
+    echo -e " ${U}╚═════════════════════════════════════════════════╝${N}"
+    echo -e ""
+    read -rp "$(echo -e " Input ID Usernya ${C}---> : ${N}")" user
+    userke=$(cat /usr/bin/kyt/var.txt | wc -l)
+    sed -i '/(ADMIN,))/a hello	c.execute("INSERT INTO admin (user_id) VALUES (?)",(USER'""$userke""',))' /usr/bin/kyt/__init__.py
+    sed -i '/(ADMIN,))/a hello  c.execute("INSERT INTO admin (user_id) VALUES (?,)", (USER'"$userke"',))' /usr/bin/kyt/__init__.py
+
+cat >>/usr/bin/kyt/var.txt <<EOF
+USER${userke}="$user"
+EOF
+    sed -i "s/hello//g" /usr/bin/kyt/__init__.py
+
+    echo 'curl -s --max-time $TIMES -d "chat_id='""$user""'&disable_web_page_preview=1&text=$TEXT&parse_mode=html" https://api.telegram.org/bot$KEY/sendMessage >/dev/null' >> /etc/tele
+    clear
+    echo -e " ${G}Succes${W} Tambah Admin BOT Telegram"
+    rm -rf /usr/bin/ddsdswl.session
+    rm -rf /usr/bin/kyt/database.db
+    systemctl restart kyt
+    read -n 1 -s -r -p " Press any key to back on menu"
+    exec menu && exit 0
+fi
+exit 0

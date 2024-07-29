@@ -1,0 +1,23 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+
+# Memeriksa penggunaan RAM sebelum pembersihan
+echo "Penggunaan RAM sebelum pembersihan:"
+free -h
+
+# Membersihkan pagecache, dentries, dan inodes
+echo "Membersihkan RAM cache..."
+sync; echo 1 > /proc/sys/vm/drop_caches
+echo "Membersihkan dentries dan inodes..."
+sync; echo 2 > /proc/sys/vm/drop_caches
+echo "Membersihkan pagecache, dentries, dan inodes..."
+sync; echo 3 > /proc/sys/vm/drop_caches
+
+# Memeriksa penggunaan RAM setelah pembersihan
+echo "Penggunaan RAM setelah pembersihan:"
+free -h
+
+echo "Pembersihan RAM selesai."
+
+exit 0

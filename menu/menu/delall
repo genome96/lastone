@@ -1,0 +1,148 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+aku=$0
+clear
+REPOKU="https://www.vmessh.cloud"
+REPOSC="https://iam.scvpn.cloud"
+biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+NC="\e[0m"
+R="\033[1;31m"
+COLOR1="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+COLBG1="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+WH='\033[1;37m'
+Y='\e[0;33m'
+G='\e[1;32m'
+C='\e[1;36m'
+U=$COLOR1
+O=$COLBG1
+W=$WH
+N=${NC}
+ipsaya=$(wget -qO- ipv4.icanhazip.com)
+data_server=$(curl -v --insecure --silent https://google.com/ 2>&1 | grep Date | sed -e 's/< Date: //')
+date_list=$(date +"%Y-%m-%d" -d "$data_server")
+data_ip="${REPOKU}/registrasi.txt"
+checking_sc() {
+    useexp=$(curl -sS "$data_ip" | grep "$ipsaya" | awk '{print $3}')
+    if [[ "$date_list" > "$useexp" ]]; then
+        systemctl stop nginx
+        systemctl stop kyt
+        systemctl stop xray
+        systemctl stop ws-stunnel
+        dilarang
+        exit 1
+    else
+        echo -ne
+    fi
+}
+checking_sc
+# FUNGSIKU
+garis(){ echo -e " $U$*$N"; }
+judul(){ echo -e " $O$*$N"; }
+tebal(){ echo -e " $W$*$N"; }
+kembali(){ read -n 1 -s -r -p " Press any key to back on menu "; }
+
+# Lokasi file
+ssh_file="/etc/xray/ssh"
+xray_file="/etc/xray/config.json"
+
+# Hapus akun SSH
+function sshdel() {
+    clear
+    echo
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    judul "             HAPUS SEMUA AKUN SSH             "
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    printf " ${W}%-10s%-15s%-10s%-10s${N}\n""●●●" "USER" "JENIS" "STATUS"
+    grep '^### ' $ssh_file | while read -r line; do
+        sshuser=$(echo "$line" | cut -d ' ' -f 2)
+        sed -i "/^### $sshuser /d" $ssh_file
+        rm /home/vps/public_html/ssh-$sshuser.txt >/dev/null 2>&1
+        rm /etc/xray/sshx/${sshuser}IP >/dev/null 2>&1
+        rm /etc/xray/sshx/${sshuser}login >/dev/null 2>&1
+        if getent passwd $sshuser > /dev/null 2>&1; then
+            userdel $sshuser > /dev/null 2>&1
+            printf " ${C}%-10s${Y}%-15s${C}%-10s${G}%-10s${N}\n" "--->" "$sshuser" "SSHWS" "Dihapus!"
+        else
+            printf " ${C}%-10s${Y}%-15s${C}%-10s${R}%-10s${N}\n" "--->" "$sshuser" "SSHWS" "Tidak ada!"
+        fi
+    done
+    echo -n > /etc/xray/sshx/listlock
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    kembali
+    $aku
+}
+
+# Hapus akun VMess, VLESS, dan Trojan
+function xraydel() {
+    clear
+    echo
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    judul "      HAPUS SEMUA AKUN VMESS VLESS TROJAN     "
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    printf " ${W}%-10s%-15s%-10s%-10s${N}\n" "●●●" "USER" "JENIS" "STATUS"
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    for protocol in "vmg" "vlg" "trg"; do
+        grep "^#$protocol " $xray_file | while read -r line; do
+            user=$(echo "$line" | cut -d ' ' -f 2)
+            exp=$(echo "$line" | cut -d ' ' -f 3)
+
+            case $protocol in
+                vmg)
+                    dir="/etc/vmess"
+                    code2="vm"
+                    jenis="Vmess"
+                    ;;
+                vlg)
+                    dir="/etc/vless"
+                    code2="vl"
+                    jenis="Vless"
+                    ;;
+                trg)
+                    dir="/etc/trojan"
+                    code2="tr"
+                    jenis="Trojan"
+                    ;;
+            esac
+
+            sed -i "/^#$protocol $user $exp/,/^},{/d" $xray_file
+            sed -i "/^#$code2 $user $exp/,/^},{/d" $xray_file
+
+            rm $dir/${user}IP >/dev/null 2>&1
+            rm /home/vps/public_html/${protocol}-${user}.txt >/dev/null 2>&1
+            rm $dir/${user}login >/dev/null 2>&1
+
+            printf " ${C}%-10s${Y}%-15s${C}%-10s${G}%-10s${N}\n" "--->" "$user" "$jenis" "Dihapus!"
+        done
+    done
+    garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -n > /etc/vmess/akundelete
+    echo -n > /etc/vless/akundelete
+    echo -n > /etc/trojan/akundelete
+    echo -n > /etc/vmess/listlock
+    echo -n > /etc/vless/listlock
+    echo -n > /etc/trojan/listlock
+    kembali
+    menu
+}
+
+# menu
+clear
+echo
+garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+judul "        MENU HAPUS SEMUA AKUN SEKALIGUS       "
+garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e " ${W}[${U}01${W}] DEL ALL SSH ACCOUNTS"
+echo -e " ${W}[${U}02${W}] DEL ALL XRAY ACCOUNTS"
+echo -e " ${W}[${U}00${W}] BACK TO MENU"
+garis "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo
+echo -ne " Masukkan ${G}pilihanmu: ${N}"; read opsi
+case $opsi in
+    1|01) sshdel ;;
+    2|02) xraydel ;;
+    0|00) menu ;;
+    *) echo -e " ${R}Pilihan tidak valid!${N}" && sleep 2 && $aku && exit 1;;
+esac
+exit 0

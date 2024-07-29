@@ -1,0 +1,155 @@
+#!/bin/bash
+exit_clean() { echo " Dihentikan"; exit 0; }
+trap exit_clean SIGINT
+biji=`date +"%Y-%m-%d" -d "$dateFromServer"`
+colornow=$(cat /etc/alawivpn/theme/color.conf)
+NC="\e[0m"
+RED="\033[0;31m"
+COLOR1="$(cat /etc/alawivpn/theme/$colornow | grep -w "TEXT" | cut -d: -f2|sed 's/ //g')"
+COLBG1="$(cat /etc/alawivpn/theme/$colornow | grep -w "BG" | cut -d: -f2|sed 's/ //g')"
+WH='\033[1;37m'
+U=$COLOR1
+O=$COLBG1
+W=$WH
+N=$NC
+G='\e[1;32m'
+author=$(cat /etc/profil)
+lebar=54
+judul="$author"
+penyamaan() {
+    lebar_judul=${#judul}
+    peluasan=$(( (lebar - lebar_judul) /2 -1 ))
+    padding=""
+    for ((i=0; i<peluasan; i++)); do
+        padding+=" "
+    done
+}
+cetak_judul(){
+    penyamaan
+    if (( lebar_judul % 2 == 1 )); then
+        printf " $U%s$N%s$W%s$N%s$U%s$N\n" "║" "$padding" "$judul" "$padding " "║"
+    else
+        printf " $U%s$N%s$W%s$N%s$U%s$N\n" "║" "$padding" "$judul" "$padding" "║"
+    fi
+}
+function berhasil(){
+clear
+echo -e "
+$U ——————————————————————————————————————$N
+  $O       TEMA BERHASIL DIGANTI        $N
+$U ——————————————————————————————————————$N
+ Kembali ke menu dalam 3 detik
+"
+tput civis
+for i in {3..1}
+do
+    echo -ne "\r Kembali ${G}$i${N} detik lagi.."
+    sleep 1
+done
+echo -ne "\r Kembali ${G}sekarang..!!    \n"
+tput cnorm
+exec menu && exit 0
+}
+clear
+echo
+echo -e " ${U}╔════════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${N}${O}               ${W}● THEMES PANEL MENU ●                ${N}${U}║ ${N}"
+echo -e " ${U}╚════════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔════════════════════════════════════════════════════╗${N}"
+echo -e " ${U}║${N} ${W}[${U}01${W}]${N} ${U}● ${W}COLOR RED         ${W}[${U}08${W}]${N} ${U}● ${W}COLOR LIGHT RED${N}${U}    ║${N}"
+echo -e " ${U}║${N} ${W}[${U}02${W}]${N} ${U}● ${W}COLOR GREEN       ${W}[${U}09${W}]${N} ${U}● ${W}COLOR LIGHT GREEN${N}${U}  ║${N}"
+echo -e " ${U}║${N} ${W}[${U}03${W}]${N} ${U}● ${W}COLOR YELLOW      ${W}[${U}10${W}]${N} ${U}● ${W}COLOR LIGHT YELLOW${N}${U} ║${N}"
+echo -e " ${U}║${N} ${W}[${U}04${W}]${N} ${U}● ${W}COLOR BLUE        ${W}[${U}11${W}]${N} ${U}● ${W}COLOR LIGHT BLUE${N}${U}   ║${N}"
+echo -e " ${U}║${N} ${W}[${U}05${W}]${N} ${U}● ${W}COLOR MAGENTA     ${W}[${U}12${W}]${N} ${U}● ${W}COLOR LIGHT MAGENTA${N}${U}║${N}"
+echo -e " ${U}║${N} ${W}[${U}06${W}]${N} ${U}● ${W}COLOR CYAN        ${W}[${U}13${W}]${N} ${U}● ${W}COLOR LIGHT CYAN${N}${U}   ║${N}"
+echo -e " ${U}║${N} ${W}[${U}07${W}]${N} ${U}● ${W}COLOR LIGHT GRAY  ${W}[${U}14${W}]${N} ${U}● ${W}COLOR DARKGRAY${N}${U}     ║${N}"
+echo -e " ${U}╚════════════════════════════════════════════════════╝${N}"
+echo -e " ${U}╔══════════════════════${W} ● BY ● ${U}══════════════════════╗${N}"
+cetak_judul
+echo -e " ${U}╚════════════════════════════════════════════════════╝${N}"
+echo -e ""
+echo -ne " ${W}Select menu ${U}: ${W}"; read colormenu
+case $colormenu in
+01 | 1)
+clear
+echo "red" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+02 | 2)
+clear
+echo "green" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+03 | 3)
+clear
+echo "yellow" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+04 | 4)
+clear
+echo "blue" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+05 | 5)
+clear
+echo "magenta" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+06 | 6)
+clear
+echo "cyan" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+07 | 7)
+clear
+echo "lightgray" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+08 | 8)
+clear
+echo "lightred" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+09 | 9)
+clear
+echo "lightgreen" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+10 | 10)
+clear
+echo "lightyellow" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+11 | 11)
+clear
+echo "lightblue" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+12 | 12)
+clear
+echo "lightmagenta" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+13 | 13)
+clear
+echo "lightcyan" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+14 | 14)
+clear
+echo "darkgray" >/etc/alawivpn/theme/color.conf
+berhasil
+;;
+00 | 0)
+clear
+exec menu && exit 0
+;;
+*)
+clear
+exec m-theme && exit 0
+;;
+esac
+echo -e ""
+read -n 1 -s -r -p "  Press any key to back on menu"
+exec menu && exit 0
+exit 0
