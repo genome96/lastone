@@ -1,7 +1,7 @@
 #!/bin/bash
 aku=$0
 cd
-REPOSC="https://iam.scvpn.cloud"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 wget -q "${REPOSC}/menu/menu.zip"
 unzip menu.zip
 chmod +x menu/*

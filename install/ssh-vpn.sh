@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # ==================================================
-REPOSC="https://iam.scvpn.cloud"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 # etc
 apt dist-upgrade -y
 apt install netfilter-persistent -y

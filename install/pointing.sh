@@ -8,9 +8,9 @@ red='\e[38;5;208m'
 NC='\e[0m'
 #random
 echo ""
-CF_ID="vpsvpsku@gmail.com"
-CF_KEY="cd1359615747671220e7bd08cb8e91414e40c"
-DOMAIN1="alawivpn.cloud"
+CF_ID="ccarlito7641@gmail.com"
+CF_KEY="f1590d14d5d19fac6d6fb84b785b8090ab1ec"
+DOMAIN1="darkanon.tech"
 sub=$(cat /root/subdomainx)
 SUB_DOMAIN1="${sub}.${DOMAIN1}"
 SUB_DOMAIN01="*.${SUB_DOMAIN1}"
@@ -78,7 +78,7 @@ echo -e "${hijau}Berhasil$NC Pointing ${biru}${SUB_DOMAIN1}$NC"
 echo -e "         Untuk ip ${biru}${IP}$NC"
 echo -e ""
 TIMES="10"
-CHATID="6331389328"
+CHATID="7350152532"
 KEY="7104548532:AAHl8gN5J8tWqWnEKpgZFSTDRyuoHwt5bKw"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
 TIMEZONE=$(printf '%(%H:%M:%S)T')

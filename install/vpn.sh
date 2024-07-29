@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPOSC="https://iam.scvpn.cloud"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 # initialisasi var
 export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;

@@ -1,6 +1,6 @@
 #!/bin/bash
-REPOKU="https://www.vmessh.cloud"
-REPOSC="https://iam.scvpn.cloud"
+REPOKU="https://raw.githubusercontent.com/genome96/lastone/main"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 ns_domain_cloudflare() {
 	DOMAIN="alawivpn.cloud"
 	DOMAIN_PATH=$(cat /etc/xray/domain)

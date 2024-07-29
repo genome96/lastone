@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-REPOSC="https://iam.scvpn.cloud"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 red='\e[1;31m'
 green2='\e[1;32m'
 yell='\e[1;33m'

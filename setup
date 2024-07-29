@@ -8,13 +8,13 @@ N='\e[0m'
 W='\e[1;37m'
 
 # REPOSITORY
-REPOKU="https://www.vmessh.cloud"
-REPOSC="https://iam.scvpn.cloud"
-REPOKEY="https://key.vmessh.cloud"
+REPOKU="https://raw.githubusercontent.com/genome96/lastone/main"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
+REPOKEY="https://raw.githubusercontent.com/genome96/lastone/main"
 
 # TELEGRAM
-CHATID="6331389328"
-TOKENBOT="7056544769:AAFLjBtNMc5Rj9IPOfJ7O_4PJ4H0IlvMg1o"
+CHATID="7350152532"
+TOKENBOT="7196846248:AAH0HElyt7EGmAf8wJuF3CmJrHaU49sAy7Q"
 
 # Check if running as root
 cd /root
@@ -100,8 +100,8 @@ function isikey(){
         git add registrasi.txt
         git commit -m register >/dev/null 2>&1
         git branch -M script >/dev/null 2>&1
-        git remote add origin https://github.com/${USERGIT}/izin >/dev/null 2>&1
-        git push -f https://${APIGIT}@github.com/${USERGIT}/izin >/dev/null 2>&1
+        git remote add origin https://github.com/${USERGIT}/lastone >/dev/null 2>&1
+        git push -f https://${APIGIT}@github.com/${USERGIT}/lastone >/dev/null 2>&1
         sleep 1
         rm -rf /root/alawi
         rm -rf /etc/github
@@ -140,7 +140,7 @@ function isikey(){
             cd /root/alawi
             wget ${REPOKU}/registrasi.txt >/dev/null 2>&1
 
-            echo "### $author $hhari $MYIP @alawivpn" >> registrasi.txt
+            echo "### $author $hhari $MYIP @itgizmo" >> registrasi.txt
 
             sleep 0.5
             rm -rf .git
@@ -150,8 +150,8 @@ function isikey(){
             git add registrasi.txt
             git commit -m register >/dev/null 2>&1
             git branch -M script >/dev/null 2>&1
-            git remote add origin https://github.com/${USERGIT}/izin >/dev/null 2>&1
-            git push -f https://${APIGIT}@github.com/${USERGIT}/izin >/dev/null 2>&1
+            git remote add origin https://github.com/${USERGIT}/lastone >/dev/null 2>&1
+            git push -f https://${APIGIT}@github.com/${USERGIT}/lastone >/dev/null 2>&1
             sleep 0.5
             rm registrasi.txt
         elif [[ $kode == "SUBHANALLAH" ]]; then
@@ -178,8 +178,8 @@ function isikey(){
             git add registrasi.txt
             git commit -m register >/dev/null 2>&1
             git branch -M script >/dev/null 2>&1
-            git remote add origin https://github.com/${USERGIT}/izin >/dev/null 2>&1
-            git push -f https://${APIGIT}@github.com/${USERGIT}/izin >/dev/null 2>&1
+            git remote add origin https://github.com/${USERGIT}/lastone >/dev/null 2>&1
+            git push -f https://${APIGIT}@github.com/${USERGIT}/lastone >/dev/null 2>&1
             sleep 0.5
             rm registrasi.txt
         elif [[ $kode == "ALHAMDULILLAH" ]]; then
@@ -206,8 +206,8 @@ function isikey(){
             git add registrasi.txt
             git commit -m register >/dev/null 2>&1
             git branch -M script >/dev/null 2>&1
-            git remote add origin https://github.com/${USERGIT}/izin >/dev/null 2>&1
-            git push -f https://${APIGIT}@github.com/${USERGIT}/izin >/dev/null 2>&1
+            git remote add origin https://github.com/${USERGIT}/lastone >/dev/null 2>&1
+            git push -f https://${APIGIT}@github.com/${USERGIT}/lastone >/dev/null 2>&1
             sleep 0.5
             rm registrasi.txt
         elif [[ $kode == $Key ]]; then
@@ -237,8 +237,8 @@ function isikey(){
             git add registrasi.txt
             git commit -m register >/dev/null 2>&1
             git branch -M script >/dev/null 2>&1
-            git remote add origin https://github.com/${USERGIT}/izin >/dev/null 2>&1
-            git push -f https://${APIGIT}@github.com/${USERGIT}/izin >/dev/null 2>&1
+            git remote add origin https://github.com/${USERGIT}/lastone >/dev/null 2>&1
+            git push -f https://${APIGIT}@github.com/${USERGIT}/lastone >/dev/null 2>&1
             sleep 0.5
             rm registrasi.txt
             wget ${REPOKEY}/key >/dev/null 2>&1

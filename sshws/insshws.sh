@@ -1,5 +1,5 @@
 #!/bin/bash
-REPOSC="https://iam.scvpn.cloud"
+REPOSC="https://raw.githubusercontent.com/genome96/lastone/main"
 
 wget -q -O /usr/local/bin/ws-dropbear ${REPOSC}/sshws/ws-dropbear
 chmod +x /usr/local/bin/ws-dropbear
